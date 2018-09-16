@@ -45,7 +45,7 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
-	@Column(length=64)
+	@Column(length=64, unique=true)
 	private String username;
 	
 	@Column(length=64)

@@ -10,10 +10,15 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.madongfang.api.ReturnApi;
+import com.madongfang.entity.User;
 
 /**
  * Servlet Filter implementation class ApiFilter
@@ -55,6 +60,38 @@ public class ApiFilter implements Filter {
 		{
 			logger.debug("ApiFilter: method=" + httpRequest.getMethod() + ", url=" + uri);
 		}
+		
+		/* 验证用户登陆 */
+		boolean authenticated = false; // 是否已登录认证
+		int level = 99;
+		HttpSession session = httpRequest.getSession(false);
+		String apiString = uri.substring(httpRequest.getContextPath().length());
+		if ("OPTIONS".equals(httpRequest.getMethod()) 
+				|| apiString.startsWith("/api/login")
+				|| apiString.equals("/api/logout")
+				|| apiString.startsWith("/api/test")) // 不需要登陆验证的命令
+		{
+			authenticated = true;
+		}
+		else // 普通用户登录
+		{
+			if (session != null && session.getAttribute("user") != null)
+			{
+				authenticated = true;
+				level = ((User)session.getAttribute("user")).getLevel();
+			}
+		}
+		
+		if (!authenticated)
+		{
+			ReturnApi returnApi = new ReturnApi(-1, "未登陆，请先登陆！");
+			httpResponse.setStatus(401);
+			response.getWriter().write(new ObjectMapper().writeValueAsString(returnApi));
+			return;
+		}
+		
+		/* 权限等级限制 */
+		logger.info("login user level={}", level);
 		
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
