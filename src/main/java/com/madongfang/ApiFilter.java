@@ -63,7 +63,7 @@ public class ApiFilter implements Filter {
 		
 		/* 验证用户登陆 */
 		boolean authenticated = false; // 是否已登录认证
-		int level = 99;
+		User user = null;
 		HttpSession session = httpRequest.getSession(false);
 		String apiString = uri.substring(httpRequest.getContextPath().length());
 		if ("OPTIONS".equals(httpRequest.getMethod()) 
@@ -73,12 +73,21 @@ public class ApiFilter implements Filter {
 		{
 			authenticated = true;
 		}
-		else // 普通用户登录
+		else
 		{
-			if (session != null && session.getAttribute("user") != null)
+			if (session != null)
 			{
-				authenticated = true;
-				level = ((User)session.getAttribute("user")).getLevel();
+				user = (User)session.getAttribute("user");
+				if (user != null)
+				{
+					request.setAttribute("user", user);
+					authenticated = true;
+				}
+				else 
+				{
+					logger.info("session中无user属性");
+					authenticated = false;
+				}
 			}
 		}
 		
@@ -91,7 +100,10 @@ public class ApiFilter implements Filter {
 		}
 		
 		/* 权限等级限制 */
-		logger.info("login user level={}", level);
+		if (user != null)
+		{
+			logger.info("login user level={}", user.getLevel());
+		}
 		
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
