@@ -1,21 +1,14 @@
-package com.madongfang.entity;
+package com.madongfang.api;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+public class ProductApi {
 
-@Entity
-public class Product {
-
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -75,33 +68,28 @@ public class Product {
 		this.longitude = longitude;
 	}
 
-	public Integer getManufacturerId() {
-		return manufacturerId;
+	public ManufacturerApi getManufacturer() {
+		return manufacturer;
 	}
 
-	public void setManufacturerId(Integer manufacturerId) {
-		this.manufacturerId = manufacturerId;
+	public void setManufacturer(ManufacturerApi manufacturer) {
+		this.manufacturer = manufacturer;
 	}
 
-	public Integer getProjectId() {
-		return projectId;
+	public ProjectApi getProject() {
+		return project;
 	}
 
-	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
+	public void setProject(ProjectApi project) {
+		this.project = project;
 	}
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	
-	@Column(length=64, unique=true)
 	private String rfid;
 	
-	@Column(length=64)
 	private String model; // 型号
 	
-	@Column(length=64)
 	private String batchNumber; // 批次号
 	
 	private Date buildTime; // 生产时间
@@ -112,7 +100,7 @@ public class Product {
 	
 	private Double longitude; // 经度
 	
-	private Integer manufacturerId;
+	private ManufacturerApi manufacturer;
 	
-	private Integer projectId;
+	private ProjectApi project;
 }

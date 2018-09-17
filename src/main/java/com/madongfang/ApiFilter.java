@@ -102,7 +102,7 @@ public class ApiFilter implements Filter {
 		/* 权限等级限制 */
 		if (user != null)
 		{
-			logger.info("login user level={}", user.getLevel());
+			logger.debug("login user level={}", user.getLevel());
 		}
 		
 		// pass the request along the filter chain
