@@ -3,14 +3,25 @@ package com.madongfang.service;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.madongfang.api.ManufacturerApi;
 import com.madongfang.api.ProductApi;
 import com.madongfang.api.ProjectApi;
+import com.madongfang.entity.Manufacturer;
 import com.madongfang.entity.Product;
+import com.madongfang.entity.Project;
+import com.madongfang.entity.User;
+import com.madongfang.repository.ManufacturerRepository;
 import com.madongfang.repository.ProductRepository;
+import com.madongfang.repository.ProjectRepository;
+import com.madongfang.repository.UserProjectRepository;
 
 @Service
 public class ProductService {
@@ -52,6 +63,59 @@ public class ProductService {
 		return products;
 	}
 	
+	public Page<ProductApi> getProducts(User user, List<Integer> projectIds, Pageable pageable) {
+		
+		Page<Product> products;
+		
+		if (projectIds == null || projectIds.size() == 0)
+		{
+			if (user.getLevel() <= 1)
+			{
+				products = productRepository.findAll(pageable);
+			}
+			else
+			{
+				projectIds = userProjectRepository.findProjectIdsByUserId(user.getId());
+				products = productRepository.findByProjectIdIn(projectIds, pageable);
+			}
+		}
+		else
+		{
+			products = productRepository.findByProjectIdIn(projectIds, pageable);
+		}
+		logger.info("projectIds={}", projectIds);
+		
+		return products.map(new Converter<Product, ProductApi>() {
+
+			@Override
+			public ProductApi convert(Product product) {
+				ProductApi productApi = product2Api(product);
+				if (product.getProjectId() != null)
+				{
+					Project project = projectRepository.findOne(product.getProjectId());
+					productApi.setProject(ProjectService.project2Api(project));
+				}
+				if (product.getManufacturerId() != null)
+				{
+					Manufacturer manufacturer = manufacturerRepository.findOne(product.getManufacturerId());
+					productApi.setManufacturer(ManufacturerService.manufacturer2Api(manufacturer));
+				}
+				return productApi;
+			}
+		});
+	}
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private ProductRepository productRepository;
+	
+	@Autowired
+	private ProjectRepository projectRepository;
+	
+	@Autowired
+	private ManufacturerRepository manufacturerRepository;
+	
+	@Autowired
+	private UserProjectRepository userProjectRepository;
 }
