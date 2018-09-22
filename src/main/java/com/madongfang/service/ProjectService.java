@@ -20,7 +20,14 @@ import com.madongfang.repository.UserProjectRepository;
 public class ProjectService {
 
 	public static ProjectApi project2Api(Project project) {
-		ProjectApi projectApi =  new ProjectApi();
+		return project2Api(project, null);
+	}
+	
+	public static ProjectApi project2Api(Project project, ProjectApi projectApi) {
+		if (projectApi == null)
+		{
+			projectApi =  new ProjectApi();
+		}
 		projectApi.setId(project.getId());
 		projectApi.setConstructor(project.getConstructor());
 		projectApi.setName(project.getName());

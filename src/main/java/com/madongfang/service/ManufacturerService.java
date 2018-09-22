@@ -9,7 +9,14 @@ import com.madongfang.entity.Manufacturer;
 public class ManufacturerService {
 
 	public static ManufacturerApi manufacturer2Api(Manufacturer manufacturer) {
-		ManufacturerApi manufacturerApi = new ManufacturerApi();
+		return manufacturer2Api(manufacturer, null);
+	}
+	
+	public static ManufacturerApi manufacturer2Api(Manufacturer manufacturer, ManufacturerApi manufacturerApi) {
+		if (manufacturerApi == null)
+		{
+			manufacturerApi = new ManufacturerApi();
+		}
 		manufacturerApi.setId(manufacturer.getId());
 		manufacturerApi.setName(manufacturer.getName());
 		return manufacturerApi;

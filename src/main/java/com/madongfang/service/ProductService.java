@@ -27,7 +27,15 @@ import com.madongfang.repository.UserProjectRepository;
 public class ProductService {
 
 	public static ProductApi product2Api(Product product) {
-		ProductApi productApi = new ProductApi();
+		return product2Api(product, null);
+	}
+	
+	public static ProductApi product2Api(Product product, ProductApi productApi) {
+		if (productApi == null)
+		{
+			productApi = new ProductApi();
+		}
+		
 		productApi.setBatchNumber(product.getBatchNumber());
 		productApi.setBuildTime(product.getBuildTime());
 		productApi.setId(product.getId());
@@ -93,12 +101,12 @@ public class ProductService {
 				if (product.getProjectId() != null)
 				{
 					Project project = projectRepository.findOne(product.getProjectId());
-					productApi.setProject(ProjectService.project2Api(project));
+					productApi.setProject(ProjectService.project2Api(project, productApi.getProject()));
 				}
 				if (product.getManufacturerId() != null)
 				{
 					Manufacturer manufacturer = manufacturerRepository.findOne(product.getManufacturerId());
-					productApi.setManufacturer(ManufacturerService.manufacturer2Api(manufacturer));
+					productApi.setManufacturer(ManufacturerService.manufacturer2Api(manufacturer, productApi.getManufacturer()));
 				}
 				return productApi;
 			}
