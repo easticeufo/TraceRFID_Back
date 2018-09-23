@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +33,12 @@ public class ProductController {
 			@PageableDefault(size=100) Pageable pageable)
 	{
 		return productService.getProducts(user, projectIds, pageable);
+	}
+	
+	@GetMapping(value="/{productId}")
+	public ProductApi getProduct(@PathVariable int productId)
+	{
+		return productService.getProduct(productId);
 	}
 	
 	@Autowired

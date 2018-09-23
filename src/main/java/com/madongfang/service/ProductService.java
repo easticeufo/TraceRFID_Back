@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 import com.madongfang.api.ManufacturerApi;
 import com.madongfang.api.ProductApi;
 import com.madongfang.api.ProjectApi;
+import com.madongfang.api.ReturnApi;
 import com.madongfang.entity.Manufacturer;
 import com.madongfang.entity.Product;
 import com.madongfang.entity.Project;
 import com.madongfang.entity.User;
+import com.madongfang.exception.HttpNotFoundException;
 import com.madongfang.repository.ManufacturerRepository;
 import com.madongfang.repository.ProductRepository;
 import com.madongfang.repository.ProjectRepository;
@@ -111,6 +113,28 @@ public class ProductService {
 				return productApi;
 			}
 		});
+	}
+	
+	public ProductApi getProduct(int productId) {
+		Product product = productRepository.findOne(productId);
+		if (product == null)
+		{
+			throw new HttpNotFoundException(new ReturnApi(-1, "product not found"));
+		}
+		ProductApi productApi = product2Api(product);
+		
+		if (product.getProjectId() != null)
+		{
+			Project project = projectRepository.findOne(product.getProjectId());
+			productApi.setProject(ProjectService.project2Api(project, productApi.getProject()));
+		}
+		if (product.getManufacturerId() != null)
+		{
+			Manufacturer manufacturer = manufacturerRepository.findOne(product.getManufacturerId());
+			productApi.setManufacturer(ManufacturerService.manufacturer2Api(manufacturer, productApi.getManufacturer()));
+		}
+		
+		return productApi;
 	}
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
