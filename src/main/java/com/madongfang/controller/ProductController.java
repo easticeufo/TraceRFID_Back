@@ -20,12 +20,6 @@ import com.madongfang.service.ProductService;
 @RestController
 @RequestMapping(value="/api/products")
 public class ProductController {
-
-	@GetMapping
-	public List<ProductApi> getProducts(@RequestParam int projectId)
-	{
-		return productService.getProducts(projectId);
-	}
 	
 	@GetMapping(params="page")
 	public Page<ProductApi> getProducts(@RequestAttribute User user, 
@@ -33,6 +27,18 @@ public class ProductController {
 			@PageableDefault(size=100) Pageable pageable)
 	{
 		return productService.getProducts(user, projectIds, pageable);
+	}
+	
+	@GetMapping(params= {"!page", "projectId"})
+	public List<ProductApi> getProjectProducts(@RequestParam int projectId)
+	{
+		return productService.getProjectProducts(projectId);
+	}
+	
+	@GetMapping(params= {"!page", "manufacturerId"})
+	public List<ProductApi> getManufacturerProducts(@RequestParam int manufacturerId)
+	{
+		return productService.getManufacturerProducts(manufacturerId);
 	}
 	
 	@GetMapping(value="/{productId}")

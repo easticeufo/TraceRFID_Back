@@ -13,5 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	public List<Product> findByProjectId(int projectId);
 	
+	public List<Product> findByManufacturerId(int manufacturerId);
+	
 	public Page<Product> findByProjectIdIn(Collection<Integer> projectIds, Pageable pageable);
 }

@@ -63,10 +63,20 @@ public class ProductService {
 		return productApi;
 	}
 	
-	public List<ProductApi> getProducts(int projectId) {
+	public List<ProductApi> getProjectProducts(int projectId) {
 		
 		List<ProductApi> products = new LinkedList<>();
 		for (Product product : productRepository.findByProjectId(projectId)) {
+			products.add(product2Api(product));
+		}
+		
+		return products;
+	}
+	
+	public List<ProductApi> getManufacturerProducts(int manufacturerId) {
+		
+		List<ProductApi> products = new LinkedList<>();
+		for (Product product : productRepository.findByManufacturerId(manufacturerId)) {
 			products.add(product2Api(product));
 		}
 		
